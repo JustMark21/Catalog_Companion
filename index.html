@@ -163,12 +163,19 @@
                         class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="Please list any food allergies..."></textarea>
                 </div>
 
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg">
-                        Submit Order via Email
+                <!-- Action Buttons -->
+                <div class="pt-4 flex flex-col md:flex-row gap-4">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg flex justify-center items-center">
+                        <i class="fas fa-paper-plane mr-2"></i> Submit via Email App
                     </button>
-                    <p class="text-center text-xs text-gray-400 mt-2">This will open your default email app to send the order.</p>
+                    
+                    <button type="button" onclick="copyOrderText()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg flex justify-center items-center border border-gray-300">
+                        <i class="fas fa-copy mr-2"></i> Copy Order Text
+                    </button>
                 </div>
+                <p class="text-center text-xs text-gray-500 mt-2">
+                    <i class="fas fa-lightbulb text-yellow-500"></i> Tip: If the email app doesn't open automatically, click "Copy Order Text", then paste it into your email manually.
+                </p>
             </form>
         </div>
     </section>
@@ -371,30 +378,72 @@
             document.getElementById('requestFormSection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            
+        // --- HELPER TO GENERATE ORDER TEXT ---
+        function getOrderText() {
+            const formData = new FormData(document.getElementById('orderForm'));
             const studentName = formData.get('studentName');
             const parentName = formData.get('parentName');
             const childCount = formData.get('childCount');
             const allergies = formData.get('allergies') || 'None';
             const items = formData.get('selected_items');
-            
-            // Recipient Email
-            const recipient = "CatalogCompanionPS370@gmail.com";
-            
-            // Construct email subject and body
-            const subject = `Order for ${studentName}`;
+
+            if(!studentName) return null; // Simple validation check
+
             const body = `ORDER DETAILS\n------------------\n` +
                          `Student Name: ${studentName}\n` +
                          `Parent/Guardian: ${parentName}\n` +
                          `Children in Household: ${childCount}\n` +
                          `Allergies: ${allergies}\n\n` +
                          `SELECTED ITEMS:\n------------------\n${items}`;
+            return { body, studentName };
+        }
+
+        // --- COPY FUNCTION ---
+        function copyOrderText() {
+            const data = getOrderText();
+            if (!data) {
+                alert("Please fill out the form details first.");
+                return;
+            }
             
-            // Open Mail Client
-            window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            const fullText = `Subject: Order for ${data.studentName}\n\n${data.body}`;
+            
+            navigator.clipboard.writeText(fullText).then(() => {
+                alert("Order text copied to clipboard! You can now paste it into your email.");
+            }, (err) => {
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = fullText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+                alert("Order text copied to clipboard! You can now paste it into your email.");
+            });
+        }
+
+        // --- SUBMIT FUNCTION ---
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const data = getOrderText();
+            if(!data) {
+                alert("Please fill out the form details before submitting.");
+                return;
+            }
+            
+            const recipient = "CatalogCompanionPS370@gmail.com";
+            const subject = `Order for ${data.studentName}`;
+            
+            // Construct the mailto link
+            const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(data.body)}`;
+            
+            // Try to open using a temporary link (often works better than window.location)
+            const link = document.createElement('a');
+            link.href = mailtoUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         init();
