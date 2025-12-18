@@ -32,6 +32,9 @@
             color: white;
             border-color: #3b82f6;
         }
+        .instruction-step {
+            @apply flex flex-col items-center text-center p-4 bg-blue-50 rounded-lg;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
@@ -41,7 +44,7 @@
         <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
             <div class="mb-4 md:mb-0 text-center md:text-left">
                 <h1 class="text-2xl font-bold text-blue-600">Catalog Companion</h1>
-                <p class="text-sm text-gray-500">Select items below to build your request</p>
+                <p class="text-sm text-gray-500">PS 370</p>
             </div>
             
             <!-- Search Bar -->
@@ -53,8 +56,37 @@
         </div>
     </header>
 
-    <!-- Main Content Grid -->
+    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 pb-32">
+        
+        <!-- How to Order Guidance -->
+        <section class="mb-10 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 mb-6 text-center"><i class="fas fa-info-circle text-blue-500 mr-2"></i>How to Order</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="flex flex-col items-center text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-3">1</div>
+                    <h3 class="font-semibold mb-1">Select Items</h3>
+                    <p class="text-sm text-gray-600">Click on the products you need. They will highlight and appear in the tray below.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-3">2</div>
+                    <h3 class="font-semibold mb-1">Review</h3>
+                    <p class="text-sm text-gray-600">Check your list of selected items and their corresponding ID numbers in the bottom window.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-3">3</div>
+                    <h3 class="font-semibold mb-1">Submit</h3>
+                    <p class="text-sm text-gray-600">Click "Review & Submit" to automatically draft an email order.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4 bg-yellow-50 rounded-lg border border-yellow-100">
+                    <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center font-bold mb-3"><i class="fas fa-file-alt"></i></div>
+                    <h3 class="font-semibold mb-1">Paper Backup</h3>
+                    <p class="text-sm text-gray-600">Trouble sending email? Write down the ID numbers in the selection window on our paper form.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid -->
         <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             <!-- Items will be injected here by JavaScript -->
         </div>
@@ -73,7 +105,7 @@
                 <span class="font-bold text-lg text-blue-600" id="selectedCount">0</span>
                 <span class="text-gray-600">items selected</span>
             </div>
-            <button onclick="scrollToForm()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition duration-200">
+            <button onclick="scrollToForm()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition duration-200 flex items-center">
                 Review & Submit <i class="fas fa-arrow-right ml-2"></i>
             </button>
         </div>
@@ -82,42 +114,60 @@
     <!-- Request Form Section -->
     <section id="requestFormSection" class="bg-white border-t border-gray-200 py-12">
         <div class="container mx-auto px-4 max-w-2xl">
-            <h2 class="text-3xl font-bold text-center mb-8">Finalize Your Selection</h2>
+            <h2 class="text-3xl font-bold text-center mb-2">Finalize Your Selection</h2>
+            <p class="text-center text-gray-500 mb-8">Please fill out the details below to complete your order.</p>
             
             <form id="orderForm" class="space-y-6" onsubmit="handleFormSubmit(event)">
                 
                 <!-- Selected Items List (Read Only) -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Selected Items</label>
-                    <textarea id="selectedItemsInput" name="selected_items" rows="8" readonly 
-                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none resize-none"
-                        placeholder="No items selected yet."></textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Selected Items (IDs & Names)</label>
+                    <textarea id="selectedItemsInput" name="selected_items" rows="6" readonly 
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none resize-none text-gray-600"
+                        placeholder="No items selected yet. Go back up and click items to add them."></textarea>
+                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Use these ID numbers if filling out a paper form.</p>
                 </div>
 
-                <!-- User Details -->
+                <!-- Student Details -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                        <input type="text" id="name" name="name" required 
-                            class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+                        <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">Student Full Name</label>
+                        <input type="text" id="studentName" name="studentName" required 
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. John Doe">
                     </div>
+                    <div>
+                        <label for="parentName" class="block text-sm font-medium text-gray-700 mb-1">Parent/Guardian Full Name</label>
+                        <input type="text" id="parentName" name="parentName" required 
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. Jane Doe">
+                    </div>
+                </div>
+
+                <!-- Household Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                         <input type="email" id="email" name="email" required 
-                            class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="name@example.com">
+                    </div>
+                    <div>
+                        <label for="childCount" class="block text-sm font-medium text-gray-700 mb-1">Number of Children in Household</label>
+                        <input type="number" id="childCount" name="childCount" min="1" required 
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. 2">
                     </div>
                 </div>
 
+                <!-- Allergies -->
                 <div>
-                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
-                    <textarea id="notes" name="notes" rows="3" 
-                        class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    <label for="allergies" class="block text-sm font-medium text-gray-700 mb-1">Allergies (if any)</label>
+                    <textarea id="allergies" name="allergies" rows="2" 
+                        class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="Please list any food allergies..."></textarea>
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200">
-                        Submit Request
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg">
+                        Submit Order via Email
                     </button>
+                    <p class="text-center text-xs text-gray-400 mt-2">This will open your default email app to send the order.</p>
                 </div>
             </form>
         </div>
@@ -126,9 +176,6 @@
     <!-- JavaScript Logic -->
     <script>
         // --- DATA SOURCE ---
-        // Configured based on the provided PDF content.
-        // NOTE: Images are assumed to be in an 'images/' folder named '1.jpg', '2.jpg' etc.
-        // You can change the 'image' property to a full URL if hosting elsewhere.
         const catalogItems = [
             { id: 1, name: "Dole Fruit Bowls (Cherry Mixed Fruit)", category: "Snacks" },
             { id: 2, name: "Bumble Bee Tuna Salad & Crackers", category: "Meals" },
@@ -186,8 +233,6 @@
             { id: 54, name: "Stretch Island Fruit Strips", category: "Snacks" }
         ].map(item => ({
             ...item,
-            // Assuming images are stored in an 'images' folder with IDs as filenames
-            // Fallback to a placeholder if image load fails handled in HTML
             image: `images/${item.id}.png` 
         }));
 
@@ -235,13 +280,11 @@
                 const card = document.createElement('div');
                 card.className = `item-card bg-white rounded-lg shadow border border-gray-100 overflow-hidden flex flex-col ${isSelected ? 'selected' : ''}`;
                 card.onclick = (e) => {
-                    // Prevent triggering selection when clicking the "View Image" link
                     if(e.target.tagName !== 'A' && e.target.parentElement.tagName !== 'A') {
                         toggleSelection(item.id);
                     }
                 };
 
-                // Image Element with Error Fallback
                 const imgContainer = document.createElement('div');
                 imgContainer.className = "h-48 bg-gray-200 relative overflow-hidden group";
                 
@@ -249,13 +292,11 @@
                 img.src = item.image;
                 img.alt = item.name;
                 img.className = "w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110";
-                // Fallback for missing images
                 img.onerror = function() { 
                     this.onerror = null; 
                     this.parentElement.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 flex-col"><i class="fas fa-image text-3xl mb-2"></i><span class="text-xs">Image ${item.id}</span></div>`; 
                 };
                 
-                // Link to view full image
                 const viewLink = document.createElement('a');
                 viewLink.href = item.image;
                 viewLink.target = "_blank";
@@ -266,7 +307,6 @@
                 imgContainer.appendChild(img);
                 imgContainer.appendChild(viewLink);
 
-                // Content Element
                 const content = document.createElement('div');
                 content.className = "p-4 flex-grow flex flex-col justify-between";
                 
@@ -305,21 +345,19 @@
                 state.selectedIds.add(id);
             }
             updateUI();
-            renderGrid(); // Re-render to update styling
+            renderGrid();
         }
 
         function updateUI() {
             const count = state.selectedIds.size;
             selectedCountLabel.innerText = count;
             
-            // Show/Hide selection bar
             if (count > 0) {
                 selectionBar.classList.remove('translate-y-full');
             } else {
                 selectionBar.classList.add('translate-y-full');
             }
 
-            // Update Form Textarea
             const selectedItemsArray = catalogItems.filter(item => state.selectedIds.has(item.id));
             if (selectedItemsArray.length > 0) {
                 const listText = selectedItemsArray.map(item => `[#${item.id}] ${item.name}`).join('\n');
@@ -336,24 +374,30 @@
         function handleFormSubmit(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const name = formData.get('name');
+            
+            const studentName = formData.get('studentName');
+            const parentName = formData.get('parentName');
+            const childCount = formData.get('childCount');
+            const allergies = formData.get('allergies') || 'None';
             const items = formData.get('selected_items');
-            const notes = formData.get('notes');
-
-            // Construct email body
-            const subject = `Catalog Order from ${name}`;
-            const body = `Name: ${name}\n\nSelected Items:\n${items}\n\nNotes:\n${notes}`;
+            
+            // Recipient Email
+            const recipient = "CatalogCompanionPS370@gmail.com";
+            
+            // Construct email subject and body
+            const subject = `Order for ${studentName}`;
+            const body = `ORDER DETAILS\n------------------\n` +
+                         `Student Name: ${studentName}\n` +
+                         `Parent/Guardian: ${parentName}\n` +
+                         `Children in Household: ${childCount}\n` +
+                         `Allergies: ${allergies}\n\n` +
+                         `SELECTED ITEMS:\n------------------\n${items}`;
             
             // Open Mail Client
-            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            // Optional: Alert user
-            alert("Your mail client has been opened with your selection!");
+            window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
 
-        // Run Init
         init();
-
     </script>
 </body>
 </html>
