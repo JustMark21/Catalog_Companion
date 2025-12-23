@@ -57,7 +57,12 @@
                     <!-- SCHOOL LOGO IMAGE -->
                     <img src="images/logo/logo.png" 
                          alt="School Logo" 
-                         class="h-14 w-auto mr-3 object-contain rounded-md">
+                         class="h-14 w-auto mr-3 object-contain rounded-md"
+                         onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
+                    <!-- Fallback if image missing -->
+                    <div id="logo-fallback" class="hidden h-14 w-14 bg-blue-100 rounded-md mr-3 flex items-center justify-center text-blue-500">
+                        <i class="fas fa-school text-2xl"></i>
+                    </div>
 
                     <!-- Title Text -->
                     <div>
@@ -159,6 +164,22 @@
             
             <form id="orderForm" class="space-y-6" onsubmit="handleFormSubmit(event)">
                 
+                <!-- School Site Selection (NEW ADDITION) -->
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <label for="schoolSite" class="block text-sm font-bold text-blue-800 mb-2"><i class="fas fa-map-marker-alt mr-1"></i> Select School Site</label>
+                    <select id="schoolSite" name="schoolSite" required 
+                        class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="" disabled selected>-- Click to Choose Location --</option>
+                        <option value="Main Site (Jim Thorpe School)">The Main Site (Jim Thorpe School) - 3000 West 1st Street</option>
+                        <option value="P.S. 100 (The Coney Island School)">P.S. 100 (The Coney Island School) - 2951 West 3rd Street</option>
+                        <option value="P.S. 163 (The Bath Beach School)">P.S. 163 (The Bath Beach School) - 109 Bay 14th Street</option>
+                        <option value="P.S. 237 (The Rachel L. Carson School)">P.S. 237 (The Rachel L. Carson School) - 50 Avenue P</option>
+                        <option value="William E. Grady High School">William E. Grady High School - 25 Brighton 4th Road</option>
+                        <option value="New Utrecht High School">New Utrecht High School - 1601 80th Street</option>
+                        <option value="P.S. 62 (The Ditmas Park School)">P.S. 62 (The Ditmas Park School) - 700 Cortelyou Road</option>
+                    </select>
+                </div>
+
                 <!-- Selected Items List (Read Only) -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Your Selected Items (IDs & Names)</label>
@@ -170,7 +191,7 @@
                         <p class="text-xs text-gray-500"><i class="fas fa-info-circle"></i> Use these ID numbers if filling out a paper form.</p>
                     </div>
 
-                    <!-- SUBSTITUTION NOTE ADDED HERE -->
+                    <!-- SUBSTITUTION NOTE -->
                     <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start">
                         <i class="fas fa-sync-alt text-amber-500 mt-0.5 mr-2"></i>
                         <p class="text-sm text-amber-800 font-medium">
@@ -536,6 +557,7 @@
         // --- HELPER TO GENERATE ORDER TEXT ---
         function getOrderText() {
             const formData = new FormData(document.getElementById('orderForm'));
+            const schoolSite = formData.get('schoolSite');
             const studentName = formData.get('studentName');
             const parentName = formData.get('parentName');
             const childCount = formData.get('childCount');
@@ -543,8 +565,13 @@
             const items = formData.get('selected_items');
 
             if(!studentName) return null; // Simple validation check
+            if(!schoolSite) {
+                alert("Please select a School Site.");
+                return null;
+            }
 
             const body = `ORDER DETAILS\n------------------\n` +
+                         `School Site: ${schoolSite}\n` +
                          `Student Name: ${studentName}\n` +
                          `Parent/Guardian: ${parentName}\n` +
                          `Children in Household: ${childCount}\n` +
@@ -557,7 +584,7 @@
         function copyOrderText() {
             const data = getOrderText();
             if (!data) {
-                alert("Please fill out the form details first.");
+                // Alert handled in getOrderText for school site, or student name
                 return;
             }
             
@@ -595,7 +622,6 @@
             
             const data = getOrderText();
             if(!data) {
-                alert("Please fill out the form details before submitting.");
                 return;
             }
             
